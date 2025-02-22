@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -11,6 +12,58 @@
 </head>
 <body>
     <canvas id="gameCanvas"></canvas>
-    <script src="game.js"></script>
+    <script>
+        const canvas = document.getElementById("gameCanvas");
+        const ctx = canvas.getContext("2d");
+
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        const gridSize = 20;
+        const rows = Math.floor(canvas.height / gridSize);
+        const cols = Math.floor(canvas.width / gridSize);
+
+        let grid = Array(rows).fill().map(() => Array(cols).fill(null));
+
+        function getRandomColor() {
+            return `hsl(${Math.random() * 360}, 100%, 50%)`;
+        }
+
+        let playerColor = "blue";
+        let botColor = "red";
+
+        function drawGrid() {
+            for (let y = 0; y < rows; y++) {
+                for (let x = 0; x < cols; x++) {
+                    ctx.fillStyle = grid[y][x] || "#ffffff";
+                    ctx.fillRect(x * gridSize, y * gridSize, gridSize, gridSize);
+                    ctx.strokeRect(x * gridSize, y * gridSize, gridSize, gridSize);
+                }
+            }
+        }
+
+        function claimCell(x, y, color) {
+            if (x >= 0 && x < cols && y >= 0 && y < rows && !grid[y][x]) {
+                grid[y][x] = color;
+                drawGrid();
+            }
+        }
+
+        canvas.addEventListener("click", (event) => {
+            const x = Math.floor(event.clientX / gridSize);
+            const y = Math.floor(event.clientY / gridSize);
+            claimCell(x, y, playerColor);
+        });
+
+        function botMove() {
+            const x = Math.floor(Math.random() * cols);
+            const y = Math.floor(Math.random() * rows);
+            claimCell(x, y, botColor);
+        }
+
+        setInterval(botMove, 1000);
+
+        drawGrid();
+    </script>
 </body>
 </html>
